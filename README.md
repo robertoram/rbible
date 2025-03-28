@@ -1,0 +1,2 @@
+# rbible
+A CLI Bible
