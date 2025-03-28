@@ -135,16 +135,17 @@ def get_available_versions():
     
     return list(versions)
 
-def get_book_id(book_name):
-    """Get the book ID from the book name or short name."""
-    # Check if it's a full book name
-    if book_name in BIBLE_BOOKS:
-        return BIBLE_BOOKS[book_name]["id"]
+def get_book_id(book):
+    """Get the book ID for a given book name or short code."""
+    # Try to match by full name (case-insensitive)
+    for full_name, data in BIBLE_BOOKS.items():
+        if full_name.lower() == book.lower():
+            return data["id"]
     
-    # Check if it's a short book name
-    if book_name in BOOK_BY_SHORT:
-        full_name = BOOK_BY_SHORT[book_name]
-        return BIBLE_BOOKS[full_name]["id"]
+    # Try to match by short code (case-insensitive)
+    for full_name, data in BIBLE_BOOKS.items():
+        if data["short"].lower() == book.lower():
+            return data["id"]
     
     # Not found
     return None
