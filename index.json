@@ -1,0 +1,22 @@
+{
+  "versions": [
+    {
+      "code": "LBLA",
+      "name": "La Biblia de las Américas",
+      "language": "Spanish",
+      "file": "LBLA.mybible"
+    },
+    {
+      "code": "NC",
+      "name": "Biblia Nacar Colunga",
+      "language": "Spanish",
+      "file": "NC.mybible"
+    },
+    {
+      "code": "PDT",
+      "name": "Biblia Palabra de Dios para Todos",
+      "language": "Spanish",
+      "file": "PDT.mybible"
+    }
+  ]
+}
