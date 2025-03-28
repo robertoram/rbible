@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rbible"
-version = "0.1.0"
+version = "1.0.0"  # Updated from 0.1.0 to match your existing release
 description = "A command-line Bible verse lookup tool"
 readme = "README.md"
 authors = [
