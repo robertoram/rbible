@@ -152,14 +152,33 @@ function M.setup()
           }, function(version)
             if version then
               vim.ui.input({ prompt = "Optional name for this favorite: " }, function(name)
-                local favorite_cmd = "rbible -f \"" .. verse
-                if name and name ~= "" then
-                  favorite_cmd = favorite_cmd .. "|" .. name
+                -- Remove any quotation marks from the verse reference
+                verse = verse:gsub('"', ''):gsub("'", '')
+                
+                -- Check if verse contains a book name
+                if not verse:match("%a+%s+%d+:%d+") then
+                  vim.notify("Invalid verse format. Should be 'Book Chapter:Verse' (e.g. Jos 1:9)", vim.log.levels.ERROR)
+                  return
                 end
-                favorite_cmd = favorite_cmd .. "\" -b " .. version
+                
+                -- Properly escape and quote the favorite argument
+                local favorite_arg = verse
+                if name and name ~= "" then
+                  favorite_arg = favorite_arg .. "|" .. name
+                end
+                
+                -- Construct the command with proper quoting
+                local favorite_cmd = "rbible -f '" .. favorite_arg .. "' -b " .. version
+                
+                -- Debug output
+                vim.notify("Executing: " .. favorite_cmd, vim.log.levels.DEBUG)
                 
                 local result = vim.fn.system(favorite_cmd)
-                vim.notify(result, vim.log.levels.INFO)
+                if vim.v.shell_error ~= 0 then
+                  vim.notify("Error adding favorite: " .. result, vim.log.levels.ERROR)
+                else
+                  vim.notify("Added to favorites: " .. verse, vim.log.levels.INFO)
+                end
               end)
             end
           end)

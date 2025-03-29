@@ -208,7 +208,7 @@ def get_parallel_verses(verse_ref, versions):
 
 def complete_reference(partial_ref):
     """Provide tab completion suggestions for Bible references."""
-    from bible_data import BIBLE_BOOKS, BOOK_BY_SHORT, get_book_id
+    from rbible.bible_data import BIBLE_BOOKS, BOOK_BY_SHORT, get_book_id
     
     suggestions = []
     

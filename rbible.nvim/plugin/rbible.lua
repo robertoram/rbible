@@ -34,6 +34,22 @@ end, {
   desc = "Search the Bible for text"
 })
 
+-- Add a new command for adding favorites using comma as separator
+vim.api.nvim_create_user_command("RBibleAddFavorite", function(opts)
+  local args = vim.split(opts.args, ",", {trimempty = true})
+  if #args < 2 then
+    vim.notify("Usage: RBibleAddFavorite <reference>,<name>", vim.log.levels.ERROR)
+    return
+  end
+  
+  local reference = args[1]
+  local name = args[2]
+  require("rbible").add_to_favorites(reference, name)
+end, {
+  nargs = 1,
+  desc = "Add a verse to favorites (format: reference,name)"
+})
+
 vim.api.nvim_create_user_command("RBibleFavorites", function()
   require("rbible").show_favorites()
 end, {
