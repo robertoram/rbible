@@ -1,5 +1,5 @@
 """
-rbible - A command-line Bible verse lookup tool
+rbible - Command-line Bible verse lookup tool
 """
 
-__version__ = "1.0.2"
+__version__ = '1.0.4'
