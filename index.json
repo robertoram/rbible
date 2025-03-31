@@ -1,34 +1,574 @@
 {
   "versions": [
     {
+      "code": "AFNT",
+      "name": "Antiguo y Nuevo Testamento",
+      "language": "Spanish",
+      "file": "AFNT.mybible"
+    },
+    {
+      "code": "Ausejo",
+      "name": "Biblia Ausejo",
+      "language": "Spanish",
+      "file": "Ausejo.mybible"
+    },
+    {
+      "code": "BAD1989",
+      "name": "Biblia al Día 1989",
+      "language": "Spanish",
+      "file": "BAD1989.mybible"
+    },
+    {
+      "code": "BDI",
+      "name": "Biblia de Israel",
+      "language": "Spanish",
+      "file": "BDI.mybible"
+    },
+    {
+      "code": "BDO1569",
+      "name": "Biblia del Oso 1569",
+      "language": "Spanish",
+      "file": "BDO1569.mybible"
+    },
+    {
+      "code": "BDO1573",
+      "name": "Biblia del Oso 1573",
+      "language": "Spanish",
+      "file": "BDO1573.mybible"
+    },
+    {
+      "code": "BHTI",
+      "name": "Biblia Hebraica Texto Interlineal",
+      "language": "Spanish",
+      "file": "BHTI.mybible"
+    },
+    {
+      "code": "BJ1975",
+      "name": "Biblia de Jerusalén 1975",
+      "language": "Spanish",
+      "file": "BJ1975.mybible"
+    },
+    {
+      "code": "BJ3",
+      "name": "Biblia de Jerusalén 3",
+      "language": "Spanish",
+      "file": "BJ3.mybible"
+    },
+    {
+      "code": "BL1995",
+      "name": "Biblia Latinoamericana 1995",
+      "language": "Spanish",
+      "file": "BL1995.mybible"
+    },
+    {
+      "code": "BLPH",
+      "name": "Biblia La Palabra Hispanoamérica",
+      "language": "Spanish",
+      "file": "BLPH.mybible"
+    },
+    {
+      "code": "BLSNT",
+      "name": "Biblia La Santa NT",
+      "language": "Spanish",
+      "file": "BLSNT.mybible"
+    },
+    {
+      "code": "BNP",
+      "name": "Biblia Nueva Prensa",
+      "language": "Spanish",
+      "file": "BNP.mybible"
+    },
+    {
+      "code": "BSO",
+      "name": "Biblia Sagrada Ortodoxa",
+      "language": "Spanish",
+      "file": "BSO.mybible"
+    },
+    {
+      "code": "BTI-es",
+      "name": "Biblia Textual Interlineal Español",
+      "language": "Spanish",
+      "file": "BTI-es.mybible"
+    },
+    {
+      "code": "BTX",
+      "name": "Biblia Textual",
+      "language": "Spanish",
+      "file": "BTX.mybible"
+    },
+    {
+      "code": "BTX3",
+      "name": "Biblia Textual 3ra Edición",
+      "language": "Spanish",
+      "file": "BTX3.mybible"
+    },
+    {
+      "code": "BTX4",
+      "name": "Biblia Textual 4ta Edición",
+      "language": "Spanish",
+      "file": "BTX4.mybible"
+    },
+    {
+      "code": "BXJO",
+      "name": "Biblia X José",
+      "language": "Spanish",
+      "file": "BXJO.mybible"
+    },
+    {
+      "code": "CAB2003",
+      "name": "Castellano Antiguo Biblia 2003",
+      "language": "Spanish",
+      "file": "CAB2003.mybible"
+    },
+    {
+      "code": "CDG",
+      "name": "Cantera-Domingo Iglesias",
+      "language": "Spanish",
+      "file": "CDG.mybible"
+    },
+    {
+      "code": "CEE11",
+      "name": "Conferencia Episcopal Española 2011",
+      "language": "Spanish",
+      "file": "CEE11.mybible"
+    },
+    {
+      "code": "CJ",
+      "name": "Cipriano de Valera",
+      "language": "Spanish",
+      "file": "CJ.mybible"
+    },
+    {
+      "code": "DHHD",
+      "name": "Dios Habla Hoy con Deuterocanónicos",
+      "language": "Spanish",
+      "file": "DHHD.mybible"
+    },
+    {
+      "code": "DHHED",
+      "name": "Dios Habla Hoy Edición de Estudio",
+      "language": "Spanish",
+      "file": "DHHED.mybible"
+    },
+    {
+      "code": "DHHS94",
+      "name": "Dios Habla Hoy 1994",
+      "language": "Spanish",
+      "file": "DHHS94.mybible"
+    },
+    {
+      "code": "DuTillet",
+      "name": "DuTillet Español",
+      "language": "Spanish",
+      "file": "DuTillet.mybible"
+    },
+    {
+      "code": "ESE",
+      "name": "Español Sagradas Escrituras",
+      "language": "Spanish",
+      "file": "ESE.mybible"
+    },
+    {
+      "code": "EUNSA",
+      "name": "Sagrada Biblia EUNSA",
+      "language": "Spanish",
+      "file": "EUNSA.mybible"
+    },
+    {
+      "code": "JLXX",
+      "name": "Septuaginta Español",
+      "language": "Spanish",
+      "file": "JLXX.mybible"
+    },
+    {
+      "code": "JSE",
+      "name": "Jubilee Spanish Edition",
+      "language": "Spanish",
+      "file": "JSE.mybible"
+    },
+    {
+      "code": "KDSH",
+      "name": "Kadosh Israelita Mesiánica",
+      "language": "Spanish",
+      "file": "KDSH.mybible"
+    },
+    {
+      "code": "KJ1769",
+      "name": "King James 1769 Español",
+      "language": "Spanish",
+      "file": "KJ1769.mybible"
+    },
+    {
       "code": "LBLA",
       "name": "La Biblia de las Américas",
       "language": "Spanish",
       "file": "LBLA.mybible"
     },
     {
+      "code": "LPD",
+      "name": "La Palabra Diaria",
+      "language": "Spanish",
+      "file": "LPD.mybible"
+    },
+    {
+      "code": "LXX-es",
+      "name": "Septuaginta en Español",
+      "language": "Spanish",
+      "file": "LXX-es.mybible"
+    },
+    {
+      "code": "N-C",
+      "name": "Nácar-Colunga",
+      "language": "Spanish",
+      "file": "N-C.mybible"
+    },
+    {
+      "code": "NBD08",
+      "name": "Nueva Biblia al Día 2008",
+      "language": "Spanish",
+      "file": "NBD08.mybible"
+    },
+    {
+      "code": "NBJ1998",
+      "name": "Nueva Biblia de Jerusalén 1998",
+      "language": "Spanish",
+      "file": "NBJ1998.mybible"
+    },
+    {
+      "code": "NBLH",
+      "name": "Nueva Biblia Latinoamericana de Hoy",
+      "language": "Spanish",
+      "file": "NBLH.mybible"
+    },
+    {
+      "code": "NBV08",
+      "name": "Nueva Biblia Viva 2008",
+      "language": "Spanish",
+      "file": "NBV08.mybible"
+    },
+    {
       "code": "NC",
-      "name": "Biblia Nacar Colunga",
+      "name": "Biblia Nácar-Colunga",
       "language": "Spanish",
       "file": "NC.mybible"
     },
     {
+      "code": "NRV",
+      "name": "Nueva Reina Valera",
+      "language": "Spanish",
+      "file": "NRV.mybible"
+    },
+    {
+      "code": "NRV1990",
+      "name": "Nueva Reina Valera 1990",
+      "language": "Spanish",
+      "file": "NRV1990.mybible"
+    },
+    {
+      "code": "NTPB",
+      "name": "Nuevo Testamento Pueblo de Dios",
+      "language": "Spanish",
+      "file": "NTPB.mybible"
+    },
+    {
+      "code": "NTV",
+      "name": "Nueva Traducción Viviente",
+      "language": "Spanish",
+      "file": "NTV.mybible"
+    },
+    {
+      "code": "NTV10",
+      "name": "Nueva Traducción Viviente 2010",
+      "language": "Spanish",
+      "file": "NTV10.mybible"
+    },
+    {
+      "code": "NVI",
+      "name": "Nueva Versión Internacional",
+      "language": "Spanish",
+      "file": "NVI.mybible"
+    },
+    {
+      "code": "NVI-S19",
+      "name": "Nueva Versión Internacional Santa Biblia 2019",
+      "language": "Spanish",
+      "file": "NVI-S19.mybible"
+    },
+    {
+      "code": "NVI15",
+      "name": "Nueva Versión Internacional 2015",
+      "language": "Spanish",
+      "file": "NVI15.mybible"
+    },
+    {
+      "code": "NVIC17",
+      "name": "Nueva Versión Internacional Contemporánea 2017",
+      "language": "Spanish",
+      "file": "NVIC17.mybible"
+    },
+    {
       "code": "PDT",
-      "name": "Biblia Palabra de Dios para Todos",
+      "name": "Palabra de Dios para Todos",
       "language": "Spanish",
       "file": "PDT.mybible"
     },
     {
+      "code": "Pesh-es",
+      "name": "Peshitta en Español",
+      "language": "Spanish",
+      "file": "Pesh-es.mybible"
+    },
+    {
+      "code": "Platense",
+      "name": "Biblia del Plata",
+      "language": "Spanish",
+      "file": "Platense.mybible"
+    },
+    {
+      "code": "RV09",
+      "name": "Reina Valera 1909",
+      "language": "Spanish",
+      "file": "RV09.mybible"
+    },
+    {
+      "code": "RV17",
+      "name": "Reina Valera 2017",
+      "language": "Spanish",
+      "file": "RV17.mybible"
+    },
+    {
+      "code": "RV1858",
+      "name": "Reina Valera 1858",
+      "language": "Spanish",
+      "file": "RV1858.mybible"
+    },
+    {
+      "code": "RV1862",
+      "name": "Reina Valera 1862",
+      "language": "Spanish",
+      "file": "RV1862.mybible"
+    },
+    {
+      "code": "RV1865",
+      "name": "Reina Valera 1865",
+      "language": "Spanish",
+      "file": "RV1865.mybible"
+    },
+    {
+      "code": "RV1909",
+      "name": "Reina Valera 1909",
+      "language": "Spanish",
+      "file": "RV1909.mybible"
+    },
+    {
+      "code": "RV2000",
+      "name": "Reina Valera 2000",
+      "language": "Spanish",
+      "file": "RV2000.mybible"
+    },
+    {
+      "code": "RV2004",
+      "name": "Reina Valera 2004",
+      "language": "Spanish",
+      "file": "RV2004.mybible"
+    },
+    {
+      "code": "RV60",
+      "name": "Reina Valera 1960",
+      "language": "Spanish",
+      "file": "RV60.mybible"
+    },
+    {
+      "code": "RV77",
+      "name": "Reina Valera 1977",
+      "language": "Spanish",
+      "file": "RV77.mybible"
+    },
+    {
+      "code": "RV95",
+      "name": "Reina Valera 1995",
+      "language": "Spanish",
+      "file": "RV95.mybible"
+    },
+    {
+      "code": "RVA",
+      "name": "Reina Valera Actualizada",
+      "language": "Spanish",
+      "file": "RVA.mybible"
+    },
+    {
+      "code": "RVA15",
+      "name": "Reina Valera Actualizada 2015",
+      "language": "Spanish",
+      "file": "RVA15.mybible"
+    },
+    {
+      "code": "RVA1602",
+      "name": "Reina Valera Antigua 1602",
+      "language": "Spanish",
+      "file": "RVA1602.mybible"
+    },
+    {
+      "code": "RVC",
+      "name": "Reina Valera Contemporánea",
+      "language": "Spanish",
+      "file": "RVC.mybible"
+    },
+    {
+      "code": "RVG",
+      "name": "Reina Valera Gómez",
+      "language": "Spanish",
+      "file": "RVG.mybible"
+    },
+    {
+      "code": "RVG04",
+      "name": "Reina Valera Gómez 2004",
+      "language": "Spanish",
+      "file": "RVG04.mybible"
+    },
+    {
+      "code": "RVI12",
+      "name": "Reina Valera Internacional 2012",
+      "language": "Spanish",
+      "file": "RVI12.mybible"
+    },
+    {
+      "code": "RVP",
+      "name": "Reina Valera Purificada",
+      "language": "Spanish",
+      "file": "RVP.mybible"
+    },
+    {
+      "code": "RVR",
+      "name": "Reina Valera Revisada",
+      "language": "Spanish",
+      "file": "RVR.mybible"
+    },
+    {
+      "code": "RVR09",
+      "name": "Reina Valera Revisada 1909",
+      "language": "Spanish",
+      "file": "RVR09.mybible"
+    },
+    {
+      "code": "RVR60",
+      "name": "Reina Valera Revisada 1960",
+      "language": "Spanish",
+      "file": "RVR60.mybible"
+    },
+    {
+      "code": "SBMN",
+      "name": "Santa Biblia Moderna Nueva",
+      "language": "Spanish",
+      "file": "SBMN.mybible"
+    },
+    {
+      "code": "SBVUJ",
+      "name": "Santa Biblia Versión Unida Judeocristiana",
+      "language": "Spanish",
+      "file": "SBVUJ.mybible"
+    },
+    {
+      "code": "SCIO",
+      "name": "Biblia Scío de San Miguel",
+      "language": "Spanish",
+      "file": "SCIO.mybible"
+    },
+    {
+      "code": "SEVA",
+      "name": "Sagradas Escrituras Versión Antigua",
+      "language": "Spanish",
+      "file": "SEVA.mybible"
+    },
+    {
+      "code": "SM1975",
+      "name": "Sagrada Moderna 1975",
+      "language": "Spanish",
+      "file": "SM1975.mybible"
+    },
+    {
+      "code": "SSE",
+      "name": "Sagradas Escrituras",
+      "language": "Spanish",
+      "file": "SSE.mybible"
+    },
+    {
+      "code": "TA",
+      "name": "Traducción en Lenguaje Actual",
+      "language": "Spanish",
+      "file": "TA.mybible"
+    },
+    {
+      "code": "TLA",
+      "name": "Traducción en Lenguaje Actual",
+      "language": "Spanish",
+      "file": "TLA.mybible"
+    },
+    {
+      "code": "TLAD",
+      "name": "Traducción en Lenguaje Actual con Deuterocanónicos",
+      "language": "Spanish",
+      "file": "TLAD.mybible"
+    },
+    {
+      "code": "TORAH",
+      "name": "Torah en Español",
+      "language": "Spanish",
+      "file": "TORAH.mybible"
+    },
+    {
+      "code": "VBL",
+      "name": "Versión Biblia Libre",
+      "language": "Spanish",
+      "file": "VBL.mybible"
+    },
+    {
+      "code": "VIN",
+      "name": "Versión Internacional",
+      "language": "Spanish",
+      "file": "VIN.mybible"
+    },
+    {
+      "code": "VIN2011",
+      "name": "Versión Internacional 2011",
+      "language": "Spanish",
+      "file": "VIN2011.mybible"
+    },
+    {
       "code": "VM",
-      "name": "Biblia Versión Moderna",
+      "name": "Versión Moderna",
       "language": "Spanish",
       "file": "VM.mybible"
     },
     {
-      "code": "NTV",
-      "name": "Biblia Nueva Traducción Viviente",
+      "code": "VM1929",
+      "name": "Versión Moderna 1929",
       "language": "Spanish",
-      "file": "NTV.mybible"
+      "file": "VM1929.mybible"
+    },
+    {
+      "code": "iBY",
+      "name": "Biblia Yisraelita",
+      "language": "Spanish",
+      "file": "iBY.mybible"
+    },
+    {
+      "code": "iNA27",
+      "name": "Nestle-Aland 27 Español",
+      "language": "Spanish",
+      "file": "iNA27.mybible"
+    },
+    {
+      "code": "iTisch",
+      "name": "Tischendorf Español",
+      "language": "Spanish",
+      "file": "iTisch.mybible"
+    },
+    {
+      "code": "inWH",
+      "name": "Westcott-Hort Español",
+      "language": "Spanish",
+      "file": "inWH.mybible"
     }
   ]
 }
