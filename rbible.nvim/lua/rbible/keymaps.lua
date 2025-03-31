@@ -118,7 +118,6 @@ function M.setup()
     end)
   end, { desc = "Search Bible" })
 
-  -- Show favorites with interactive selection
   vim.keymap.set("n", "<leader>rf", function()
     -- First get the favorites list
     local command = "rbible -F"
@@ -153,7 +152,6 @@ function M.setup()
     end)
   end, { desc = "Show and select favorite verses" })
 
-  -- Add history command
   vim.keymap.set("n", "<leader>rh", function()
     -- Get history
     local command = "rbible -H"
@@ -198,62 +196,75 @@ function M.setup()
     end)
   end, { desc = "Show verse history" })
 
-  -- Add a favorite with version selection
-    -- Add a favorite with version selection
-    vim.keymap.set("n", "<leader>ra", function()
-      vim.ui.input({ prompt = "Bible verse to add as favorite: " }, function(verse)
-        if verse then
-          -- Get available versions and show them in a selection menu
-          local command = "rbible -l"
-          local output = vim.fn.system(command)
-          local versions = {}
-          for line in output:gmatch("[^\r\n]+") do
-            if line:match("^%s+%w+") then
-              table.insert(versions, line:match("^%s+(%w+)"))
-            end
+  vim.keymap.set("n", "<leader>ra", function()
+    vim.ui.input({ prompt = "Bible verse to add as favorite: " }, function(verse)
+      if verse then
+        -- Get available versions and show them in a selection menu
+        local command = "rbible -l"
+        local output = vim.fn.system(command)
+        local versions = {}
+        for line in output:gmatch("[^\r\n]+") do
+          if line:match("^%s+%w+") then
+            table.insert(versions, line:match("^%s+(%w+)"))
           end
-          
-          vim.ui.select(versions, {
-            prompt = "Select Bible version:",
-            format_item = function(item)
-              return item
-            end
-          }, function(version)
-            if version then
-              vim.ui.input({ prompt = "Optional name for this favorite: " }, function(name)
-                -- Remove any quotation marks from the verse reference
-                verse = verse:gsub('"', ''):gsub("'", '')
-                
-                -- Check if verse contains a book name
-                if not verse:match("%a+%s+%d+:%d+") then
-                  vim.notify("Invalid verse format. Should be 'Book Chapter:Verse' (e.g. Jos 1:9)", vim.log.levels.ERROR)
-                  return
-                end
-                
-                -- Properly escape and quote the favorite argument
-                local favorite_arg = verse
-                if name and name ~= "" then
-                  favorite_arg = favorite_arg .. "|" .. name
-                end
-                
-                -- Construct the command with proper quoting
-                local favorite_cmd = "rbible -f '" .. favorite_arg .. "' -b " .. version
-                
-                -- Debug output
-                vim.notify("Executing: " .. favorite_cmd, vim.log.levels.DEBUG)
-                
-                local result = vim.fn.system(favorite_cmd)
-                if vim.v.shell_error ~= 0 then
-                  vim.notify("Error adding favorite: " .. result, vim.log.levels.ERROR)
-                else
-                  vim.notify("Added to favorites: " .. verse, vim.log.levels.INFO)
-                end
-              end)
-            end
-          end)
+        end
+        
+        vim.ui.select(versions, {
+          prompt = "Select Bible version:",
+          format_item = function(item)
+            return item
+          end
+        }, function(version)
+          if version then
+            vim.ui.input({ prompt = "Optional name for this favorite: " }, function(name)
+              -- Remove any quotation marks from the verse reference
+              verse = verse:gsub('"', ''):gsub("'", '')
+              
+              -- Check if verse contains a book name
+              if not verse:match("%a+%s+%d+:%d+") then
+                vim.notify("Invalid verse format. Should be 'Book Chapter:Verse' (e.g. Jos 1:9)", vim.log.levels.ERROR)
+                return
+              end
+              
+              -- Properly escape and quote the favorite argument
+              local favorite_arg = verse
+              if name and name ~= "" then
+                favorite_arg = favorite_arg .. "|" .. name
+              end
+              
+              -- Construct the command with proper quoting
+              local favorite_cmd = "rbible -f '" .. favorite_arg .. "' -b " .. version
+              
+              local result = vim.fn.system(favorite_cmd)
+              if vim.v.shell_error ~= 0 then
+                vim.notify("Error adding favorite: " .. result, vim.log.levels.ERROR)
+              else
+                vim.notify("Added to favorites: " .. verse, vim.log.levels.INFO)
+              end
+            end)
+          end
+        end)
+      end
+    end)
+  end, { desc = "Add verse to favorites with version selection" })
+
+  vim.keymap.set("n", "<leader>rg", function()
+    local references = require("rbible.reference_detector").detect_references()
+    if #references > 0 then
+      vim.ui.select(references, {
+        prompt = "Select a Bible reference:",
+        format_item = function(item)
+          return item.reference
+        end
+      }, function(selected)
+        if selected then
+          require("rbible").lookup_verse(selected.reference, { markdown = true })
         end
       end)
-    end, { desc = "Add verse to favorites with version selection" })
+    else
+      vim.notify("No Bible references found in current buffer", vim.log.levels.INFO)
+    end
+  end, { desc = "Find Bible references in buffer" })
 end
 
 return M

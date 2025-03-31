@@ -2,12 +2,13 @@ local M = {}
 
 -- Configuration with defaults
 M.config = {
-  default_version = nil, -- Will use the first available version
+  default_version = nil,
   use_markdown = true,
   copy_to_clipboard = true,
+  enable_reference_detection = true,
   floating_window = {
-    width = 0.6,         -- 60% of editor width
-    height = 0.4,        -- 40% of editor height
+    width = 0.6,
+    height = 0.4,
     border = "rounded",
     title = "rbible",
     title_pos = "center"
@@ -19,13 +20,17 @@ function M.setup_keymaps()
   require("rbible.keymaps").setup()
 end
 
--- Update the setup function to include keymaps option
 function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", M.config, opts or {})
   
   -- Setup keymaps if enabled
   if opts and opts.setup_keymaps then
     M.setup_keymaps()
+  end
+
+  -- Initialize reference detector if enabled
+  if M.config.enable_reference_detection then
+    require("rbible.reference_detector").setup()
   end
 end
 
