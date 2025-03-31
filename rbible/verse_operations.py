@@ -35,76 +35,60 @@ def parse_reference(reference):
         print(f"Error: Chapter and verse must be numbers.")
         sys.exit(1)
 
+def format_strongs(text):
+    """Format Strong's numbers in a cleaner way."""
+    import re
+    # Convert <S>1234</S> to [H1234] or [G1234] format
+    # Hebrew numbers are typically 1-8674
+    # Greek numbers are typically 1-5624
+    def replace_strong(match):
+        num = match.group(1)
+        if num.isdigit():
+            n = int(num)
+            prefix = 'H' if n <= 8674 else 'G'
+            return f"[{prefix}{num}]"
+        return ""
+    
+    text = re.sub(r'<S>(\d+)</S>', replace_strong, text)
+    # Remove lone asterisks but keep other formatting
+    text = text.replace(' * ', ' ')
+    return text
+
 def get_verse(bible_conn, book, chapter, verse):
     """Get the specified verse or verse range from the Bible database."""
     try:
-        # Get book ID
-        book_id = get_book_id(book)
-        if book_id is None:
-            print(f"Error: Book '{book}' not found.")
-            from bible_data import list_books
-            list_books()
-            sys.exit(1)
-        
         cursor = bible_conn.cursor()
         
-        # Check if chapter exists
-        cursor.execute("SELECT DISTINCT Chapter FROM Bible WHERE Book = ? ORDER BY Chapter", (book_id,))
-        chapters = [row[0] for row in cursor.fetchall()]
+        # Check which table structure we have
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [t[0] for t in cursor.fetchall()]
         
-        if not chapters:
-            print(f"Error: No chapters found for book '{book}'.")
-            sys.exit(1)
-        
-        if chapter not in chapters:
-            print(f"Error: Chapter {chapter} not found in {book}.")
-            print(f"Available chapters: {', '.join(map(str, chapters))}")
-            sys.exit(1)
-        
-        # Handle verse range
-        if isinstance(verse, tuple):
-            start_verse, end_verse = verse
-            cursor.execute(
-                "SELECT Verse, Scripture FROM Bible WHERE Book = ? AND Chapter = ? AND Verse >= ? AND Verse <= ? ORDER BY Verse",
-                (book_id, chapter, start_verse, end_verse)
-            )
-            verses = cursor.fetchall()
+        if 'verses' in tables:
+            cursor.execute("""
+                SELECT text 
+                FROM verses v
+                JOIN books b ON v.book_number = b.book_number
+                WHERE (b.short_name LIKE ? OR b.long_name LIKE ?)
+                AND v.chapter = ? AND v.verse = ?
+            """, (f"%{book}%", f"%{book}%", chapter, verse))
             
-            if not verses:
-                print(f"Error: No verses found in range {start_verse}-{end_verse} in {book} {chapter}.")
-                sys.exit(1)
-            
-            result = []
-            for row in verses:
-                # Fix: Remove the newline after the verse number
-                result.append(f"{row[0]}. {row[1].strip()}")
-            
-            return "\n".join(result)
         else:
-            # Handle single verse
-            cursor.execute(
-                "SELECT Scripture FROM Bible WHERE Book = ? AND Chapter = ? AND Verse = ?",
-                (book_id, chapter, verse)
-            )
-            row = cursor.fetchone()
+            book_id = get_book_id(book)
+            cursor.execute("""
+                SELECT Scripture 
+                FROM Bible 
+                WHERE Book = ? AND Chapter = ? AND Verse = ?
+            """, (book_id, chapter, verse))
+        
+        row = cursor.fetchone()
+        if not row:
+            raise ValueError(f"Verse not found: {book} {chapter}:{verse}")
             
-            if not row:
-                # Get available verses to show in error message
-                cursor.execute(
-                    "SELECT MAX(Verse) FROM Bible WHERE Book = ? AND Chapter = ?",
-                    (book_id, chapter)
-                )
-                max_verse = cursor.fetchone()[0]
-                
-                print(f"Error: Verse {verse} not found in {book} {chapter}.")
-                print(f"Available verses: 1-{max_verse}")
-                sys.exit(1)
-            
-            # Fix: Strip any leading/trailing whitespace
-            return row[0].strip()
+        # Format Strong's numbers in the verse text
+        return format_strongs(row[0].strip())
+        
     except Exception as e:
-        print(f"Error retrieving verse: {e}")
-        sys.exit(1)
+        raise Exception(f"Error retrieving verse: {e}")
     finally:
         if 'cursor' in locals():
             cursor.close()
