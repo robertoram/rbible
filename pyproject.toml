@@ -23,6 +23,7 @@ classifiers = [
 keywords = ["bible", "verse", "lookup", "cli"]
 dependencies = [
     "argparse",
+    "pyperclip",  # Add this line
 ]
 requires-python = ">=3.6"
 

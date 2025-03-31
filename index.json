@@ -17,6 +17,18 @@
       "name": "Biblia Palabra de Dios para Todos",
       "language": "Spanish",
       "file": "PDT.mybible"
+    },
+    {
+      "code": "VM",
+      "name": "Biblia Versión Moderna",
+      "language": "Spanish",
+      "file": "VM.mybible"
+    },
+    {
+      "code": "NTV",
+      "name": "Biblia Nueva Traducción Viviente",
+      "language": "Spanish",
+      "file": "NTV.mybible"
     }
   ]
 }
