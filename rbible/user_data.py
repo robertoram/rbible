@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import json
+from pathlib import Path
 
 # Constants for history and favorites
 HISTORY_FILE = os.path.join(os.path.expanduser("~"), ".rbible", "history.json")
@@ -192,3 +193,40 @@ def remove_favorite(index_or_reference):
     
     print(f"No favorite found with index or reference: {index_or_reference}")
     return False
+
+
+def set_default_version(version):
+    """Set the user's preferred default Bible version."""
+    config = load_user_config()
+    config['default_version'] = version
+    save_user_config(config)
+    print(f"Default Bible version set to: {version}")
+
+def get_config_dir():
+    """Get the configuration directory path."""
+    config_dir = Path.home() / '.config' / 'rbible'
+    config_dir.mkdir(parents=True, exist_ok=True)
+    return config_dir
+
+def get_config_file():
+    """Get the configuration file path."""
+    return get_config_dir() / 'config.json'
+
+def load_user_config():
+    """Load user configuration from file."""
+    config_file = get_config_file()
+    if config_file.exists():
+        with open(config_file, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_user_config(config):
+    """Save user configuration to file."""
+    config_file = get_config_file()
+    with open(config_file, 'w') as f:
+        json.dump(config, f, indent=2)
+
+def get_default_version():
+    """Get the user's preferred default Bible version."""
+    config = load_user_config()
+    return config.get('default_version')

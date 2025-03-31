@@ -22,6 +22,9 @@ from rbible.user_data import (
 )
 from rbible.formatters import format_as_markdown, format_parallel_verses
 
+# Add to imports at top
+from rbible.user_data import get_default_version, set_default_version
+
 def main():
     parser = argparse.ArgumentParser(
         description='Command-line Bible verse lookup tool',
@@ -62,88 +65,42 @@ Examples:
     parser.add_argument('-c', '--complete', help='Get completion suggestions for a partial reference')
     parser.add_argument('-p', '--parallel', help='Show verse in multiple translations (comma-separated versions)')
     
+    # Add new argument
+    parser.add_argument('--set-default', help='Set the default Bible version')
+    
     args = parser.parse_args()
     
-    # Handle non-verse lookup actions first
-    if args.online:
-        list_available_online_versions()
+    # Add handler for setting default version
+    if args.set_default:
+        available_versions = get_available_versions()
+        if args.set_default not in available_versions:
+            print(f"Error: Version '{args.set_default}' not found. Available versions:")
+            for v in sorted(available_versions):
+                print(f"  {v}")
+            sys.exit(1)
+        set_default_version(args.set_default)
         sys.exit(0)
     
-    if args.download:
-        success = download_bible(args.download)
-        sys.exit(0 if success else 1)
-    
-    if args.books:
-        list_books()
-        sys.exit(0)
-    
-    if args.list:
-        versions = get_available_versions()
-        if versions:
-            print("Available Bible versions:")
-            for version in sorted(versions):
-                print(f"  {version}")
-        else:
-            print("No Bible versions found. Please add Bible SQLite files to the 'bibles' directory.")
-        sys.exit(0)
-    
-    if args.history:
-        show_history(args.history_count)
-        sys.exit(0)
-    
-    # In the favorites section of main()
-    if args.favorites:
-        # If a specific index is provided
-        if args.favorites is not True:  # True is the default value when no argument is provided
-            favorite = show_favorites(args.favorites)
-            if favorite:
-                # Get the version
-                version = favorite.get('version', 'unknown')
-                
-                # Print the verse with version - only show the appropriate format based on args.markdown
-                if args.markdown:
-                    formatted_text = format_as_markdown(favorite['reference'], favorite['text'], version=version)
-                    print(f"\n{formatted_text}")
-                else:
-                    print(f"\n{favorite['reference']}({version})")
-                    print(favorite['text'])
-                
-                # Copy to clipboard if not disabled
-                if not args.no_copy:
-                    # Choose clipboard format based on markdown flag
-                    if args.markdown:
-                        clipboard_text = format_as_markdown(favorite['reference'], favorite['text'], version=version)
-                    else:
-                        clipboard_text = f"{favorite['reference']}({version})\n{favorite['text']}"
-                    
-                    try:
-                        pyperclip.copy(clipboard_text)
-                        print(f"\nVerse copied to clipboard!")
-                    except Exception as e:
-                        print(f"\nFailed to copy to clipboard: {e}")
-        else:
-            # Just show all favorites
-            show_favorites()
-        sys.exit(0)
-    
-    if args.remove_favorite:
-        remove_favorite(args.remove_favorite)
-        sys.exit(0)
-    
-    if args.complete:
-        suggestions = complete_reference(args.complete)
-        for suggestion in suggestions:
-            print(suggestion)
-        sys.exit(0)
-    
-    # Select the first available version if none specified
+    # Version selection - do this only once
     version = args.bible
     if not version:
-        available_versions = get_available_versions()
-        if not available_versions:
-            print("No Bible versions found. Please add Bible SQLite files to the 'bibles' directory or download them with -d option.")
-            sys.exit(1)
-        version = available_versions[0]
+        version = get_default_version()
+        if not version:
+            available_versions = get_available_versions()
+            if not available_versions:
+                print("No Bible versions found. Please add Bible SQLite files to the 'bibles' directory or download them with -d option.")
+                sys.exit(1)
+            version = available_versions[0]
+    
+    # Remove this entire block as it's duplicating version selection
+    # Select the first available version if none specified
+    # version = args.bible
+    # if not version:
+    #     available_versions = get_available_versions()
+    #     if not available_versions:
+    #         print("No Bible versions found. Please add Bible SQLite files to the 'bibles' directory or download them with -d option.")
+    #         sys.exit(1)
+    #     version = available_versions[0]
     
     bible_conn = load_bible_version(version)
     
