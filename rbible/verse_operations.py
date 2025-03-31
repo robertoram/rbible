@@ -63,29 +63,40 @@ def get_verse(bible_conn, book, chapter, verse):
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
         tables = [t[0] for t in cursor.fetchall()]
         
-        if 'verses' in tables:
-            cursor.execute("""
-                SELECT text 
-                FROM verses v
-                JOIN books b ON v.book_number = b.book_number
-                WHERE (b.short_name LIKE ? OR b.long_name LIKE ?)
-                AND v.chapter = ? AND v.verse = ?
-            """, (f"%{book}%", f"%{book}%", chapter, verse))
-            
+        # Handle verse ranges
+        if isinstance(verse, tuple):
+            start_verse, end_verse = verse
+            verse_range = range(start_verse, end_verse + 1)
         else:
-            book_id = get_book_id(book)
-            cursor.execute("""
-                SELECT Scripture 
-                FROM Bible 
-                WHERE Book = ? AND Chapter = ? AND Verse = ?
-            """, (book_id, chapter, verse))
+            verse_range = [verse]
         
-        row = cursor.fetchone()
-        if not row:
+        verses_text = []
+        for v in verse_range:
+            if 'verses' in tables:
+                cursor.execute("""
+                    SELECT text 
+                    FROM verses v
+                    JOIN books b ON v.book_number = b.book_number
+                    WHERE (b.short_name LIKE ? OR b.long_name LIKE ?)
+                    AND v.chapter = ? AND v.verse = ?
+                """, (f"%{book}%", f"%{book}%", chapter, v))
+                
+            else:
+                book_id = get_book_id(book)
+                cursor.execute("""
+                    SELECT Scripture 
+                    FROM Bible 
+                    WHERE Book = ? AND Chapter = ? AND Verse = ?
+                """, (book_id, chapter, v))
+            
+            row = cursor.fetchone()
+            if row:
+                verses_text.append(format_strongs(row[0].strip()))
+        
+        if not verses_text:
             raise ValueError(f"Verse not found: {book} {chapter}:{verse}")
             
-        # Format Strong's numbers in the verse text
-        return format_strongs(row[0].strip())
+        return ' '.join(verses_text)
         
     except Exception as e:
         raise Exception(f"Error retrieving verse: {e}")
