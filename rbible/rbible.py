@@ -100,7 +100,7 @@ Examples:
                 # Get the version
                 version = favorite.get('version', 'unknown')
                 
-                # Print the verse with version
+                # Print the verse with version - only show the appropriate format based on args.markdown
                 if args.markdown:
                     formatted_text = format_as_markdown(favorite['reference'], favorite['text'], version=version)
                     print(f"\n{formatted_text}")
@@ -110,10 +110,15 @@ Examples:
                 
                 # Copy to clipboard if not disabled
                 if not args.no_copy:
-                    clipboard_text = f"{favorite['reference']}({version})\n{favorite['text']}"
+                    # Choose clipboard format based on markdown flag
+                    if args.markdown:
+                        clipboard_text = format_as_markdown(favorite['reference'], favorite['text'], version=version)
+                    else:
+                        clipboard_text = f"{favorite['reference']}({version})\n{favorite['text']}"
+                    
                     try:
                         pyperclip.copy(clipboard_text)
-                        print("\nVerse copied to clipboard!")
+                        print(f"\nVerse copied to clipboard!")
                     except Exception as e:
                         print(f"\nFailed to copy to clipboard: {e}")
         else:
@@ -251,25 +256,29 @@ Examples:
         # Save to history
         save_to_history(ref_str, verse_text, version)
     
-    # Display all verses
-    for verse_data in all_verses:
-        print(verse_data["formatted"])
-    
-    # Copy to clipboard if not disabled
-    if not args.no_copy:
-        if len(all_verses) == 1:
-            # Single verse - copy reference and text
-            verse_data = all_verses[0]
-            clipboard_text = f"{verse_data['reference']}({version})\n{verse_data['text']}"
-        else:
-            # Multiple verses - copy all formatted output
-            clipboard_text = "\n\n".join([v["formatted"] for v in all_verses])
+        # Display all verses
+        for verse_data in all_verses:
+            print(verse_data["formatted"])
         
-        try:
-            pyperclip.copy(clipboard_text)
-            print("\nVerse(s) copied to clipboard!")
-        except Exception as e:
-            print(f"\nFailed to copy to clipboard: {e}")
+        # Copy to clipboard if not disabled
+        if not args.no_copy:
+            if len(all_verses) == 1:
+                # Single verse - copy reference and text
+                verse_data = all_verses[0]
+                if args.markdown:
+                    # Use the formatted text directly - it already has the > symbols
+                    clipboard_text = verse_data["formatted"]
+                else:
+                    clipboard_text = f"{verse_data['reference']}({version})\n{verse_data['text']}"
+            else:
+                # Multiple verses - copy all formatted output
+                clipboard_text = "\n\n".join([v["formatted"] for v in all_verses])
+            
+            try:
+                pyperclip.copy(clipboard_text)
+                print("\nVerse(s) copied to clipboard!")
+            except Exception as e:
+                print(f"\nFailed to copy to clipboard: {e}")
     
     bible_conn.close()
 

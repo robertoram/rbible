@@ -102,71 +102,96 @@ function M.create_floating_window_with_title(content, reference, version)
 end
 
 -- Function to look up a Bible verse
-function M.lookup_verse(reference, opts)
-  opts = opts or {}
-  local version = opts.version or M.config.default_version
-  local use_markdown = opts.markdown ~= nil and opts.markdown or M.config.use_markdown
-  local copy = opts.copy ~= nil and opts.copy or M.config.copy_to_clipboard
-  
-  -- Build command arguments
-  local args = {"-v", reference}
-  
-  if version then
-    table.insert(args, "-b")
-    table.insert(args, version)
-  end
-  
-  if use_markdown then
+  function M.lookup_verse(reference, opts)
+    opts = opts or {}
+    local version = opts.version or M.config.default_version
+    local use_markdown = opts.markdown ~= nil and opts.markdown or M.config.use_markdown
+    local copy = opts.copy ~= nil and opts.copy or M.config.copy_to_clipboard
+    
+    -- Properly format the reference
+    reference = reference:gsub('"', ''):gsub("'", '')  -- Remove any existing quotes
+    reference = '"' .. reference .. '"'  -- Add quotes around the reference
+    
+    -- Build command arguments
+    local args = {"-v", reference}
+    
+    if version then
+      table.insert(args, "-b")
+      table.insert(args, version)
+    end
+    
+    -- Always use markdown for clipboard formatting
     table.insert(args, "-m")
-  end
-  
-  if not copy then
+    
+    -- Always use -n to prevent the CLI from copying to clipboard
     table.insert(args, "-n")
-  end
-  
-  -- Execute rbible command
-  local command = "rbible " .. table.concat(args, " ")
-  local output = vim.fn.system(command)
-  
-  -- Extract reference and version from output if available
-  local ref, ver
-  if use_markdown then
-    ref, ver = output:match("> %*%*([^%)]+)%s%(([^%)]+)%)")
-  end
+    
+    -- Execute rbible command with properly escaped arguments
+    local command = "rbible " .. table.concat(args, " ")
+    local output = vim.fn.system(command)
+    
+    -- Copy to clipboard if enabled
+    if copy and M.config.copy_to_clipboard then
+      local clipboard_text = output
+      
+      -- Use custom formatter if provided
+      if opts.clipboard_formatter and type(opts.clipboard_formatter) == "function" then
+        clipboard_text = opts.clipboard_formatter(output)
+      end
+      
+      vim.fn.setreg('+', clipboard_text)
+      vim.notify("Verse copied to clipboard", vim.log.levels.INFO)
+    end
   
   -- Display in floating window with title
   M.create_floating_window_with_title(output, ref, ver)
 end
 
 -- Function to show parallel verses
-function M.parallel_verses(reference, versions, opts)
-  opts = opts or {}
-  local use_markdown = opts.markdown ~= nil and opts.markdown or M.config.use_markdown
-  local copy = opts.copy ~= nil and opts.copy or M.config.copy_to_clipboard
-  
-  -- Build command arguments
-  local args = {"-v", reference, "-p", table.concat(versions, ",")}
-  
-  if use_markdown then
-    table.insert(args, "-m")
+function M.parallel_verses(reference, versions)
+  -- Ensure versions is a table
+  if type(versions) == "string" then
+    versions = {versions}
   end
   
-  if not copy then
-    table.insert(args, "-n")
+  -- Instead of using the -p flag, we'll look up the verse in each version separately
+  local outputs = {}
+  
+  -- Properly format the reference - ensure it's properly quoted
+  reference = reference:gsub('"', '')  -- Remove any existing quotes
+  
+  for _, version in ipairs(versions) do
+    -- Construct the command for each version - add -n to prevent clipboard copy
+    -- Use proper quoting for the reference
+    local cmd = string.format('rbible -v "%s" -b %s -m -n', reference, version)
+    
+    -- Execute the command
+    local output = vim.fn.system(cmd)
+    
+    -- Check if we got actual content
+    if vim.v.shell_error == 0 then
+      -- Add a header for each version
+      table.insert(outputs, "## " .. version .. "\n" .. output)
+    else
+      vim.notify("Error looking up verse in " .. version .. ": " .. output, vim.log.levels.WARN)
+    end
   end
   
-  -- Execute rbible command
-  local command = "rbible " .. table.concat(args, " ")
-  local output = vim.fn.system(command)
+  -- Combine the outputs with clear separation
+  local combined_output = table.concat(outputs, "\n\n---\n\n")
   
-  -- Extract reference from output if available
-  local ref
-  if use_markdown then
-    ref = reference
+  -- Copy to clipboard if enabled
+  if M.config.copy_to_clipboard then
+    vim.fn.setreg('+', combined_output)
+    vim.notify("Parallel verses copied to clipboard", vim.log.levels.INFO)
   end
   
-  -- Display in floating window with title
-  M.create_floating_window_with_title(output, ref, table.concat(versions, ","))
+  -- Display the result
+  if combined_output ~= "" then
+    M.create_floating_window(combined_output)
+  else
+    vim.notify("No results found for parallel verses", vim.log.levels.ERROR)
+  end
 end
 
 -- Function to search the Bible
@@ -174,8 +199,12 @@ function M.search_bible(query, opts)
   opts = opts or {}
   local version = opts.version or M.config.default_version
   
+  -- Properly format the query
+  query = query:gsub('"', ''):gsub("'", '')  -- Remove any existing quotes
+  query = '"' .. query .. '"'  -- Add quotes around the query
+  
   -- Build command arguments
-  local args = {"-s", query}
+  local args = {"-s", query, "-m"}  -- Add -m flag for markdown formatting
   
   if version then
     table.insert(args, "-b")

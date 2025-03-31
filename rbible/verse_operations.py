@@ -160,8 +160,9 @@ def search_bible(bible_conn, query, limit=20):
 
 def get_parallel_verses(verse_ref, versions):
     """Get the same verse in multiple translations."""
-    from bible_data import load_bible_version
-    from user_data import save_to_history
+    # Fix the imports to use the rbible package prefix
+    from rbible.bible_data import load_bible_version
+    from rbible.user_data import save_to_history
     
     results = []
     
@@ -261,3 +262,59 @@ def complete_reference(partial_ref):
                     suggestions.append(f"{book} {chapter}:{i}")
     
     return suggestions
+
+def format_as_markdown(reference, text, version=None):
+    """Format verse text as markdown with proper quote formatting."""
+    # Create the header with reference and version
+    if version:
+        header = f"> **{reference}({version})**"
+    else:
+        header = f"> **{reference}**"
+    
+    # Format the text with proper markdown quote formatting
+    # Split the text into lines and add > to each line
+    lines = text.split('\n')
+    formatted_lines = []
+    
+    # Add the header
+    formatted_lines.append(header)
+    formatted_lines.append(">")  # Empty line after header
+    
+    # Add each line of the verse text with > prefix
+    for line in lines:
+        formatted_lines.append(f"> {line}")
+    
+    # Join all lines with newlines
+    return '\n'.join(formatted_lines)
+
+def format_parallel_verses(results, use_markdown=False):
+    """Format parallel verses for display."""
+    if not results:
+        return "No verses found."
+    
+    output_lines = []
+    
+    for result in results:
+        version = result.get("version", "Unknown")
+        reference = result.get("reference", "Unknown")
+        
+        if "error" in result:
+            output_lines.append(f"## {version}")
+            output_lines.append(f"Error: {result['error']}")
+        else:
+            if use_markdown:
+                # For markdown, format with proper headers and quote formatting
+                output_lines.append(f"## {version}")
+                output_lines.append(f"> **{reference}({version})**")
+                output_lines.append(">")  # Empty line
+                
+                # Add each line of text with > prefix
+                for line in result["text"].split('\n'):
+                    output_lines.append(f"> {line}")
+            else:
+                output_lines.append(f"{reference} ({version})")
+                output_lines.append(result["text"])
+        
+        output_lines.append("")  # Empty line between versions
+    
+    return '\n'.join(output_lines)

@@ -5,11 +5,23 @@ function M.setup()
   vim.keymap.set("n", "<leader>rb", function()
     vim.ui.input({ prompt = "Bible verse: " }, function(input)
       if input then
+        -- Remove any quotation marks from the input
+        input = input:gsub('"', ''):gsub("'", '')
+        
         vim.ui.input({ prompt = "Bible version (leave empty for default): " }, function(version)
           local opts = {}
           if version and version ~= "" then
             opts.version = version
           end
+          
+          -- Always use markdown for better formatting
+          opts.markdown = true
+          
+          -- Set a custom clipboard formatter to preserve CLI output
+          opts.clipboard_formatter = function(text)
+            return text
+          end
+          
           require("rbible").lookup_verse(input, opts)
         end)
       end
@@ -29,17 +41,68 @@ function M.setup()
           end
         end
         
-        vim.ui.select(versions, {
-          prompt = "Select Bible versions (press <Tab> to select multiple):",
-          format_item = function(item)
-            return item
-          end,
-          kind = "multi_select"
-        }, function(selected_versions)
-          if selected_versions and #selected_versions > 0 then
-            require("rbible").parallel_verses(verse, selected_versions)
+        -- Create a custom multi-select UI
+        local selected_versions = {}
+        
+        -- Function to display the selection UI
+        local function display_selection_ui()
+          -- Create a formatted list with checkmarks for selected versions
+          local items = {}
+          for _, v in ipairs(versions) do
+            local is_selected = false
+            for _, sv in ipairs(selected_versions) do
+              if v == sv then
+                is_selected = true
+                break
+              end
+            end
+            
+            local display = is_selected and "✓ " .. v or "  " .. v
+            table.insert(items, {text = display, value = v, selected = is_selected})
           end
-        end)
+          
+          -- Add a "Done" option at the end
+          table.insert(items, {text = "✅ Done - Show parallel verses", value = "DONE"})
+          
+          vim.ui.select(items, {
+            prompt = "Select Bible versions (current: " .. table.concat(selected_versions, ", ") .. ")",
+            format_item = function(item)
+              return item.text
+            end
+          }, function(item)
+            if item then
+              if item.value == "DONE" then
+                if #selected_versions > 0 then
+                  -- Execute the parallel verses lookup
+                  require("rbible").parallel_verses(verse, selected_versions)
+                else
+                  vim.notify("Please select at least one version", vim.log.levels.WARN)
+                  display_selection_ui()
+                end
+              else
+                -- Toggle selection
+                local found = false
+                for i, v in ipairs(selected_versions) do
+                  if v == item.value then
+                    table.remove(selected_versions, i)
+                    found = true
+                    break
+                  end
+                end
+                
+                if not found then
+                  table.insert(selected_versions, item.value)
+                end
+                
+                -- Show the UI again
+                display_selection_ui()
+              end
+            end
+          end)
+        end
+        
+        -- Start the selection process
+        display_selection_ui()
       end
     end)
   end, { desc = "Show parallel verses" })
@@ -47,7 +110,10 @@ function M.setup()
   vim.keymap.set("n", "<leader>rs", function()
     vim.ui.input({ prompt = "Search Bible for: " }, function(query)
       if query then
-        require("rbible").search_bible(query)
+        local opts = {
+          markdown = true  -- Enable markdown formatting for search results
+        }
+        require("rbible").search_bible(query, opts)
       end
     end)
   end, { desc = "Search Bible" })
@@ -120,9 +186,11 @@ function M.setup()
         if book_ref then
           -- Clean up any trailing spaces and wrap in quotes to handle spaces in book names
           local clean_ref = '"' .. book_ref:gsub("%s+$", "") .. '"'
-          local command = "rbible -v " .. clean_ref .. " -m"
-          local output = vim.fn.system(command)
-          require("rbible").create_floating_window(output)
+          -- Use lookup_verse instead of direct command
+          local opts = {
+            markdown = true
+          }
+          require("rbible").lookup_verse(book_ref, opts)
         else
           vim.notify("Could not parse reference: " .. selected.reference, vim.log.levels.ERROR)
         end
@@ -131,6 +199,7 @@ function M.setup()
   end, { desc = "Show verse history" })
 
   -- Add a favorite with version selection
+    -- Add a favorite with version selection
     vim.keymap.set("n", "<leader>ra", function()
       vim.ui.input({ prompt = "Bible verse to add as favorite: " }, function(verse)
         if verse then
