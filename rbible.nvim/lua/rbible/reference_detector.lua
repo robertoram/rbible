@@ -1,7 +1,7 @@
 local M = {}
 
 -- Bible reference pattern with capture groups to exclude surrounding spaces
-local reference_pattern = "[%s]*([1-3]?[A-Za-zÀ-ÿ]+%s+%d+:%d+[%-]?%d*)"
+local reference_pattern = "[%s]*([1-3]?%s*[A-Za-zÀ-ÿ]+%s+%d+:%d+[%-]?%d*)"
 
 function M.detect_references()
   local bufnr = vim.api.nvim_get_current_buf()
@@ -17,6 +17,9 @@ function M.detect_references()
       -- Calculate actual reference position without spaces
       local ref_start = line:find(reference, s, true)
       local ref_length = #reference
+      
+      -- Normalize spaces in reference
+      reference = reference:gsub("%s+", " "):match("^%s*(.-)%s*$")
       
       table.insert(references, {
         reference = reference,
