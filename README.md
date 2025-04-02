@@ -2,6 +2,8 @@
 
 A command-line Bible verse lookup tool that supports multiple Bible versions, with Neovim integration.
 
+![image](https://github.com/user-attachments/assets/cecfc5e3-f8a2-4bff-a0d5-a06dcf0ee458)
+
 ## Features
 
 - Look up Bible verses by reference (e.g., "Juan 3:16")
