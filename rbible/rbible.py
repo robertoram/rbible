@@ -50,6 +50,10 @@ Examples:
     
     parser.add_argument('-b', '--bible', help='Bible version to use')
     parser.add_argument('-v', '--verse', action='append', help='Bible verse reference (e.g., "Juan 3:16" or "Juan 3:16-20"). Can be specified multiple times.')
+    # Add format argument here, with the other arguments
+    parser.add_argument('--format', choices=['numbered_lines', 'numbered', 'plain'],
+                       default='numbered_lines',
+                       help='Verse format style: numbered with lines, numbered without lines, or plain text')
     parser.add_argument('-l', '--list', action='store_true', help='List available Bible versions')
     parser.add_argument('-B', '--books', action='store_true', help='List all Bible books and their short codes')
     parser.add_argument('-d', '--download', help='Download a Bible version (use "all" to download all available versions)', nargs='?', const='all')
@@ -70,7 +74,48 @@ Examples:
     
     args = parser.parse_args()
     
-    # Add handler for setting default version
+    # Handle utility commands first
+    if args.list:
+        versions = get_available_versions()
+        if versions:
+            print("Available Bible versions:")
+            for version in sorted(versions):
+                print(f"  {version}")
+        else:
+            print("No Bible versions found. Please add Bible SQLite files to the 'bibles' directory.")
+        sys.exit(0)
+    
+    if args.books:
+        list_books()
+        sys.exit(0)
+    
+    if args.online:
+        list_available_online_versions()
+        sys.exit(0)
+    
+    if args.download:
+        success = download_bible(args.download)
+        sys.exit(0 if success else 1)
+        
+    if args.history:
+        show_history(args.history_count)
+        sys.exit(0)
+        
+    if args.favorites:
+        show_favorites(args.favorites)
+        sys.exit(0)
+        
+    if args.remove_favorite:
+        remove_favorite(args.remove_favorite)
+        sys.exit(0)
+        
+    if args.complete:
+        suggestions = complete_reference(args.complete)
+        for suggestion in suggestions:
+            print(suggestion)
+        sys.exit(0)
+    
+    # Handle set default version
     if args.set_default:
         available_versions = get_available_versions()
         if args.set_default not in available_versions:
@@ -81,7 +126,7 @@ Examples:
         set_default_version(args.set_default)
         sys.exit(0)
     
-    # Version selection - do this only once
+    # Version selection and Bible loading
     version = args.bible
     if not version:
         version = get_default_version()
@@ -172,11 +217,11 @@ Examples:
         
         print(formatted_output)
         
-        # Copy to clipboard if not disabled
+        # In parallel verses section
         if not args.no_copy:
             try:
                 pyperclip.copy(formatted_output)
-                print("\nParallel verses copied to clipboard!")
+                # print("\nParallel verses copied to clipboard!")
             except Exception as e:
                 print(f"\nFailed to copy to clipboard: {e}")
         
@@ -186,56 +231,59 @@ Examples:
     # Process multiple verses if provided (only if not in parallel mode)
     all_verses = []
     for verse_ref in args.verse:
-        book, chapter, verse = parse_reference(verse_ref)
-        verse_text = get_verse(bible_conn, book, chapter, verse)
-        
-        # Format the reference string
-        if isinstance(verse, tuple):
-            start_verse, end_verse = verse
-            verse_str = f"{start_verse}-{end_verse}"
-        else:
-            verse_str = str(verse)
-        
-        ref_str = f"{book} {chapter}:{verse_str}"
-        
-        # Format according to preference
-        if args.markdown:
-            formatted_text = format_as_markdown(ref_str, verse_text, version=version)
-        else:
-            formatted_text = f"\n{ref_str}({version})\n{verse_text}"
-        
-        all_verses.append({
-            "reference": ref_str,
-            "text": verse_text,
-            "formatted": formatted_text
-        })
-        
-        # Save to history
-        save_to_history(ref_str, verse_text, version)
+        try:
+            book, chapter, verse = parse_reference(verse_ref)
+            verse_text = get_verse(bible_conn, book, chapter, verse, args.format)
+            
+            # Format the reference string
+            if isinstance(verse, tuple):
+                start_verse, end_verse = verse
+                verse_str = f"{start_verse}-{end_verse}"
+            else:
+                verse_str = str(verse)
+            
+            ref_str = f"{book} {chapter}:{verse_str}"
+            
+            # Format according to preference
+            if args.markdown:
+                formatted_text = format_as_markdown(ref_str, verse_text, version=version)
+            else:
+                formatted_text = f"\n{ref_str}({version})\n{verse_text}"
+            
+            all_verses.append({
+                "reference": ref_str,
+                "text": verse_text,
+                "formatted": formatted_text
+            })
+            
+            # Save to history
+            save_to_history(ref_str, verse_text, version)
+        except Exception as e:
+            print(f"Error: {e}")
+            sys.exit(1)
     
         # Display all verses
         for verse_data in all_verses:
             print(verse_data["formatted"])
         
-        # Copy to clipboard if not disabled
+        # In single/multiple verses section
         if not args.no_copy:
-            if len(all_verses) == 1:
-                # Single verse - copy reference and text
-                verse_data = all_verses[0]
-                if args.markdown:
-                    # Use the formatted text directly - it already has the > symbols
-                    clipboard_text = verse_data["formatted"]
-                else:
-                    clipboard_text = f"{verse_data['reference']}({version})\n{verse_data['text']}"
+            # Single verse - copy reference and text
+            verse_data = all_verses[0]
+            if args.markdown:
+                # Use the formatted text directly - it already has the > symbols
+                clipboard_text = verse_data["formatted"]
             else:
-                # Multiple verses - copy all formatted output
-                clipboard_text = "\n\n".join([v["formatted"] for v in all_verses])
-            
-            try:
-                pyperclip.copy(clipboard_text)
-                print("\nVerse(s) copied to clipboard!")
-            except Exception as e:
-                print(f"\nFailed to copy to clipboard: {e}")
+                clipboard_text = f"{verse_data['reference']}({version})\n{verse_data['text']}"
+        else:
+            # Multiple verses - copy all formatted output
+            clipboard_text = "\n\n".join([v["formatted"] for v in all_verses])
+        
+        try:
+            pyperclip.copy(clipboard_text)
+            # print("\nVerse(s) copied to clipboard!")
+        except Exception as e:
+            print(f"\nFailed to copy to clipboard: {e}")
     
     bible_conn.close()
 

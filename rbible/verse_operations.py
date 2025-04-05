@@ -5,6 +5,8 @@ from rbible.bible_data import get_book_id, BOOK_BY_ID
 
 def parse_reference(reference):
     """Parse a Bible reference like 'Juan 3:16' or 'Juan 3:16-20' into book, chapter, verse(s)."""
+    from rbible.bible_data import get_book_id, BOOK_BY_ID
+    
     parts = reference.split()
     if len(parts) < 2:
         print(f"Error: Invalid reference format. Use 'Book Chapter:Verse' or 'Book Chapter:Verse-Verse' format.")
@@ -18,6 +20,16 @@ def parse_reference(reference):
         sys.exit(1)
     
     chapter, verse_range = chapter_verse.split(':')
+    
+    # Check if the book exists
+    book_id = get_book_id(book)
+    if book_id is None:
+        print(f"Error: Book '{book}' not found. Use -B to see a list of available books.")
+        sys.exit(1)
+    
+    # Get the proper book name
+    if book_id in BOOK_BY_ID:
+        book = BOOK_BY_ID[book_id]
     
     try:
         chapter = int(chapter)
@@ -54,7 +66,7 @@ def format_strongs(text):
     text = text.replace(' * ', ' ')
     return text
 
-def get_verse(bible_conn, book, chapter, verse):
+def get_verse(bible_conn, book, chapter, verse, format_style='numbered_lines'):
     """Get the specified verse or verse range from the Bible database."""
     try:
         cursor = bible_conn.cursor()
@@ -80,7 +92,6 @@ def get_verse(bible_conn, book, chapter, verse):
                     WHERE (b.short_name LIKE ? OR b.long_name LIKE ?)
                     AND v.chapter = ? AND v.verse = ?
                 """, (f"%{book}%", f"%{book}%", chapter, v))
-                
             else:
                 book_id = get_book_id(book)
                 cursor.execute("""
@@ -91,15 +102,26 @@ def get_verse(bible_conn, book, chapter, verse):
             
             row = cursor.fetchone()
             if row:
-                verses_text.append(format_strongs(row[0].strip()))
+                text = format_strongs(row[0].strip())
+                if format_style == 'numbered_lines':
+                    verses_text.append(f"{v}. {text}")
+                elif format_style == 'numbered':
+                    verses_text.append(f"{v}. {text}")
+                else:  # plain
+                    verses_text.append(text)
         
         if not verses_text:
-            raise ValueError(f"Verse not found: {book} {chapter}:{verse}")
+            print(f"Error: Verse not found: {book} {chapter}:{verse}")
+            sys.exit(1)
             
-        return ' '.join(verses_text)
+        if format_style == 'numbered_lines':
+            return '\n'.join(verses_text)
+        else:
+            return ' '.join(verses_text)
         
     except Exception as e:
-        raise Exception(f"Error retrieving verse: {e}")
+        print(f"Error retrieving verse: {e}")
+        sys.exit(1)
     finally:
         if 'cursor' in locals():
             cursor.close()

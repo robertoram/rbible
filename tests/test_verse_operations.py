@@ -43,26 +43,34 @@ class TestVerseOperations(unittest.TestCase):
         """Test getting verses from the Bible"""
         # Mock get_book_id to return a valid ID
         mock_get_book_id.return_value = 43  # Juan
-        
+    
         # Create a mock connection and cursor
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
         mock_conn.cursor.return_value = mock_cursor
-        
+    
         # Test getting a single verse
         mock_cursor.fetchall.return_value = [(3,)]  # Available chapters
         mock_cursor.fetchone.return_value = ("For God so loved the world...",)
-        
-        verse_text = get_verse(mock_conn, "Juan", 3, 16)
+    
+        # Test with plain format
+        verse_text = get_verse(mock_conn, "Juan", 3, 16, format_style='plain')
         self.assertEqual(verse_text, "For God so loved the world...")
+    
+        # Test with numbered format
+        verse_text = get_verse(mock_conn, "Juan", 3, 16, format_style='numbered')
+        self.assertEqual(verse_text, "16. For God so loved the world...")
+    
+        # Test with numbered_lines format
+        verse_text = get_verse(mock_conn, "Juan", 3, 16, format_style='numbered_lines')
+        self.assertEqual(verse_text, "16. For God so loved the world...")
         
         # Test getting a verse range
-        mock_cursor.fetchall.side_effect = [
-            [(23,)],  # Available chapters
-            [
-                (1, "The LORD is my shepherd..."),
-                (2, "He makes me lie down..."),
-            ]
+        mock_cursor.fetchall.return_value = [(23,)]  # Available chapters
+        # Set up different responses for each verse in the range
+        mock_cursor.fetchone.side_effect = [
+            ("The LORD is my shepherd...",),
+            ("He makes me lie down...",)
         ]
         
         verse_text = get_verse(mock_conn, "Salmos", 23, (1, 2))

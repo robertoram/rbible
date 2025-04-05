@@ -145,6 +145,21 @@ def get_book_id(book):
         if data["short"].lower() == book.lower():
             return data["id"]
     
+    # Try to match by partial name (case-insensitive)
+    best_match = None
+    for full_name, data in BIBLE_BOOKS.items():
+        if full_name.lower().startswith(book.lower()):
+            # If we find an exact prefix match, return it immediately
+            return data["id"]
+        elif book.lower() in full_name.lower():
+            # Otherwise, keep track of partial matches
+            if best_match is None:
+                best_match = data["id"]
+    
+    # Return the best partial match if found
+    if best_match is not None:
+        return best_match
+    
     # Not found
     return None
 
