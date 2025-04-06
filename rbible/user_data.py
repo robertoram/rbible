@@ -227,6 +227,23 @@ def save_user_config(config):
         json.dump(config, f, indent=2)
 
 def get_default_version():
-    """Get the user's preferred default Bible version."""
+    """Get the default Bible version from user settings"""
+    # Usar la función existente de carga de configuración
     config = load_user_config()
-    return config.get('default_version')
+    default_version = config.get('default_version')
+    
+    if default_version:
+        return default_version
+    
+    # Si no hay versión por defecto configurada, obtener la primera disponible
+    try:
+        from rbible.bible_data import get_available_versions
+        versions = get_available_versions()
+        if versions:
+            # Guardar esta versión como predeterminada para futuras ejecuciones
+            set_default_version(versions[0])
+            return versions[0]
+    except Exception as e:
+        print(f"Error getting available versions: {e}")
+    
+    return None
