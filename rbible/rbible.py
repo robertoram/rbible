@@ -72,7 +72,16 @@ Examples:
     # Add new argument
     parser.add_argument('--set-default', help='Set the default Bible version')
     
+    # Add new argument for interactive mode
+    parser.add_argument('-i', '--interactive', action='store_true', help='Start interactive mode')
+    
     args = parser.parse_args()
+    
+    # Handle interactive mode
+    if args.interactive:
+        from rbible.interactive import run_interactive_mode
+        run_interactive_mode(args.bible)
+        sys.exit(0)
     
     # Handle utility commands first
     if args.list:
