@@ -23,3 +23,26 @@ use {
     })
   end
 }
+
+```lua
+return {
+  dir = "~/Documents/projects/rbible/rbible.nvim",
+  lazy = false,
+  config = function()
+    local rbible = require("rbible")
+    rbible.setup({
+      setup_keymaps = true,
+      enable_reference_detection = true,
+      default_version = "RVR60",
+      use_markdown = true,
+      copy_to_clipboard = true,
+      floating_window = {
+        width = 0.6,
+        height = 0.4,
+        border = "rounded",
+        title = "rbible",
+        title_pos = "center",
+      },
+    })
+  end,
+}
