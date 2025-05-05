@@ -1,3 +1,25 @@
+local M = {}
+
+function M.setup(opts)
+  opts = opts or {}
+  -- Configuración por defecto
+  local config = {
+    setup_keymaps = opts.setup_keymaps or false,
+    enable_reference_detection = opts.enable_reference_detection or false
+  }
+  
+  -- Configurar keymaps si está habilitado
+  if config.setup_keymaps then
+    vim.keymap.set('n', '<leader>rb', ':RBible ', { desc = 'Look up Bible verse' })
+    vim.keymap.set('n', '<leader>rp', ':RBibleParallel ', { desc = 'Show parallel verses' })
+    vim.keymap.set('n', '<leader>rs', ':RBibleSearch ', { desc = 'Search Bible' })
+    vim.keymap.set('n', '<leader>rf', ':RBibleFavorites<CR>', { desc = 'Show favorites' })
+    vim.keymap.set('n', '<leader>ra', ':RBibleAddFavorite ', { desc = 'Add to favorites' })
+    vim.keymap.set('n', '<leader>rh', ':RBibleHistory<CR>', { desc = 'Show history' })
+    vim.keymap.set('n', '<leader>rg', ':RBibleFindReferences<CR>', { desc = 'Find references' })
+  end
+end
+
 -- Update the add_to_favorites function to handle comma-separated input
 -- Update the add_to_favorites function to properly escape special characters
 function M.add_to_favorites(reference, name)
@@ -49,3 +71,5 @@ function M.add_to_favorites(reference, name)
     vim.notify("Added to favorites: " .. reference, vim.log.levels.INFO)
   end
 end
+
+return M
